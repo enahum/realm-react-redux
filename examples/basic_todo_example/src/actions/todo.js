@@ -35,7 +35,6 @@ export function sample(id) {
         }
 
         if (result.length === 1) {
-            console.warn('got a few', result[0].completed);
             dispatch(toggleTodo(id));
         }
     };

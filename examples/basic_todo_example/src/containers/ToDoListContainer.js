@@ -6,7 +6,6 @@ import memoizeOne from 'memoize-one';
 
 function mapPropsToQueries(realm) {
     const objs = realm.objects('ToDo');
-    console.warn('query')
     return [objs];
 }
 
@@ -17,7 +16,6 @@ function getTodosArray(todos) {
 const memoizeTodos = memoizeOne(getTodosArray);
 
 function mapQueriesToProps([todos]) {
-    console.warn('map props')
     return {
         // Normally you would use a selector here to create simplified versions
         // of the model containing only what's needed by the UI for rendering.

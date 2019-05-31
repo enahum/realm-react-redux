@@ -74,18 +74,14 @@ export class ToDoApp extends PureComponent {
     };
 
     switchStore = (name, populate = 0) => {
-        // if (RENDER_REALM) {
-        //     const store = configureRealmStore(name);
-        //     if (populate) {
-        //         this.populate(populate);
-        //     }
-        //
-        //     this.setState({store, name});
-        // } else {
-            console.warn('start populate')
-            this.populate(20000);
-            console.warn('end populate')
-        // }
+        if (RENDER_REALM) {
+            const store = configureRealmStore(name);
+            if (populate) {
+                this.populate(populate);
+            }
+
+            this.setState({store, name});
+        }
     };
 
     render() {
