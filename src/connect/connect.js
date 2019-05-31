@@ -1,5 +1,6 @@
 import shallowEqual from '../utils/shallowEqual';
-import connectAdvanced from './connectAdvanced';
+// import connectAdvanced from './connectAdvanced';
+import {connectAdvanced} from 'react-redux';
 import defaultMapDispatchToPropsFactories from './mapDispatchToProps';
 import defaultMapPropsToQueriesFactories from './mapPropsToQueries';
 import defaultMapQueriesToPropsFactories from './mapQueriesToProps';
