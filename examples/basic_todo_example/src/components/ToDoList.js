@@ -1,13 +1,14 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
     StyleSheet,
     Text,
     TextInput,
-    ScrollView,
-    View,
-    Modal,
+    FlatList,
+    SafeAreaView,
     TouchableHighlight
 } from 'react-native';
+import EventEmitter from '../utils/event_emitter';
 
 const styles = StyleSheet.create({
     container: {
@@ -53,6 +54,12 @@ const styles = StyleSheet.create({
         padding: 15,
         borderBottomWidth: 1,
         borderBottomColor: '#AAA'
+    },
+    switchButton: {
+        backgroundColor: 'red',
+        paddingVertical: 15,
+        width: '100%',
+        alignItems: 'center'
     }
 });
 
@@ -63,68 +70,95 @@ export default class ToDoList extends Component {
             name: PropTypes.string.isRequired
         })).isRequired,
         createTodo: PropTypes.func.isRequired,
-        toggleTodo: PropTypes.func.isRequired
+        toggleTodo: PropTypes.func.isRequired,
+        sample: PropTypes.func.isRequired,
     };
 
     constructor(props) {
         super(props);
-        this.updateText = this.updateText.bind(this);
-        this.addTodo = this.addTodo.bind(this);
-        this.toggleTodo = this.toggleTodo.bind(this);
         this.state = {text: ''};
+        this.listRef = React.createRef();
     }
 
-    updateText(text) {
+    updateText = (text) => {
         this.setState({text});
-    }
+    };
 
-    addTodo() {
+    addTodo = () => {
         const { createTodo } = this.props;
         const { text } = this.state;
         this.setState({text: ''});
         createTodo(text);
-    }
+        if (this.listRef && this.listRef.current) {
+            this.listRef.current.scrollToEnd({animated: true});
+        }
+    };
 
     toggleTodo(todo) {
-        const { toggleTodo } = this.props;
-        toggleTodo(todo.id);
+        const { sample } = this.props;
+        sample(todo.id);
     }
 
-    renderTodo(todo) {
+    switchDb = () => {
+        const { text } = this.state;
+        this.setState({text: ''});
+        EventEmitter.emit('switch_store', `${text.toLowerCase()}.realm`);
+    };
+
+    renderTodo = ({item: todo, index}) => {
         return (
             <TouchableHighlight key={todo.id} style={styles.todo} onPress={() => this.toggleTodo(todo)}>
                 <Text style={[styles.todoText, todo.completed && styles.completedTodoText]}>
-                    {todo.name}
+                    {`${index + 1} ${todo.name}`}
                 </Text>
             </TouchableHighlight>
         );
-    }
+    };
+
+    keyExtractor = (item, index) => {
+        // All keys are strings (either post IDs or special keys)
+        return `${item}-${index}`;
+    };
 
     render() {
         const { todos = [] } = this.props;
         const { text } = this.state;
         const buttonDisabled = !text;
         return (
-            <View style={styles.container}>
-                <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-                    {todos.map(todo => this.renderTodo(todo))}
-                    <TextInput
-                        placeholder='Add your todo'
-                        style={styles.input}
-                        value={text}
-                        onChangeText={this.updateText}
-                    />
-                </ScrollView>
+            <SafeAreaView style={styles.container}>
+                <FlatList
+                    ref={this.listRef}
+                    data={todos}
+                    style={styles.scroll}
+                    contentContainerStyle={styles.scrollContainer}
+                    renderItem={this.renderTodo}
+                    keyExtractor={this.keyExtractor}
+                />
+                <TextInput
+                    placeholder='Add your todo'
+                    style={styles.input}
+                    value={text}
+                    onChangeText={this.updateText}
+                />
                 <TouchableHighlight
                     style={[styles.addButton, buttonDisabled && styles.buttonDisabled]}
                     onPress={this.addTodo}
                     disabled={buttonDisabled}
                 >
                     <Text style={styles.addButtonText}>
-                        Add Todo
+                        {'Add Todo'}
                     </Text>
                 </TouchableHighlight>
-            </View>
+                <TouchableHighlight
+                    style={[styles.switchButton, buttonDisabled && styles.buttonDisabled]}
+                    onPress={this.switchDb}
+                    disabled={buttonDisabled}
+                >
+                    <Text style={styles.addButtonText}>
+                        {'Switch'}
+                    </Text>
+                </TouchableHighlight>
+            </SafeAreaView>
         );
     }
 }

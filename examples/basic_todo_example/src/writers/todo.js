@@ -1,5 +1,5 @@
 import uuid from 'uuid/v4';
-import { CREATE_TODO, TOGGLE_TODO } from '../actions/todo';
+import { CREATE_TODO, TOGGLE_TODO, BATCH_CREATE } from '../actions/todo';
 
 export default function todoWriter(realm, action) {
     switch (action.type) {
@@ -7,7 +7,9 @@ export default function todoWriter(realm, action) {
             const { name } = action;
             realm.create('ToDo', {
                 id: uuid(),
-                name
+                name,
+                // completed: false,
+                // createdAt: Date.now(),
             });
             break;
 
@@ -20,6 +22,19 @@ export default function todoWriter(realm, action) {
             }
             break;
 
+        case BATCH_CREATE: {
+            const {todos} = action;
+            for (let i = 0; i < todos.length; i++) {
+                const name = todos[i];
+                realm.create('ToDo', {
+                    id: uuid(),
+                    name,
+                    // completed: false,
+                    // createdAt: Date.now(),
+                });
+            }
+        }
+            break;
         default:
             break;
     }

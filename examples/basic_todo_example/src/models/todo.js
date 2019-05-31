@@ -6,7 +6,8 @@ export class ToDo {
         properties: {
             id: { type: 'string' },
             name: { type: 'string' },
-            completed: { type: 'bool', default: false }
+            completed: { type: 'bool', default: false },
+            createAt: {type: 'int', default: Date.now()}
         }
     };
 }
