@@ -103,7 +103,7 @@ export default function createRealmStore(writer, options, enhancer) {
                 realm.write(() => {
                     writer(realm, action);
                 });
-                // TODO: Figure out if this is a bug in realm (testing with 0.15.1)
+                // TODO: Figure out if this is a bug in realm (testing with 2.28.1)
                 // but change notifications aren't getting fired until the next write(),
                 // even thought the object is already updated. This should be removed
                 // once the problem is solved.
@@ -131,6 +131,7 @@ export default function createRealmStore(writer, options, enhancer) {
     });
 
     return {
+        db: realm,
         subscribe,
         getState,
         dispatch,
