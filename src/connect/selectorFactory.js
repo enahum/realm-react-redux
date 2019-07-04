@@ -100,7 +100,7 @@ export function pureFinalPropsSelectorFactory(
 
     function handleNewState() {
         const nextQueryProps = mapQueriesToProps(queries.map(q => {
-            if (q.changed) {
+            if (q.changed && q.snapshot) {
                 Reflect.deleteProperty(q, 'changed');
                 return q.snapshot();
             }
