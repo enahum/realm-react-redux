@@ -37,6 +37,7 @@ export function pureFinalPropsSelectorFactory(
         for (let type of Object.keys(changes)) {
             if (changes[type].length > 0) {
                 stateChanged = true;
+                query.changed = true;
                 // If we are watching unsafe writes for this connected component
                 // then we must dispatch so that the component will rerun the
                 // selector. The store will ignore this if we are currently
@@ -98,7 +99,13 @@ export function pureFinalPropsSelectorFactory(
     }
 
     function handleNewState() {
-        const nextQueryProps = mapQueriesToProps(queries, ownProps);
+        const nextQueryProps = mapQueriesToProps(queries.map(q => {
+            if (q.changed) {
+                Reflect.deleteProperty(q, 'changed');
+                return q.snapshot();
+            }
+            return q;
+        }), ownProps);
         const queryPropsChanged = !areQueryPropsEqual(nextQueryProps, queryProps);
         queryProps = nextQueryProps;
 
